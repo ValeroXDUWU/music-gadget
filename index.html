@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Music Gadget</title>
+
+<style>
+body{
+  font-family: Arial;
+  background:#0f0f0f;
+  color:white;
+  text-align:center;
+}
+
+h2{
+  margin-top:20px;
+}
+
+input{
+  padding:10px;
+  width:60%;
+  border-radius:10px;
+  border:none;
+}
+
+button{
+  padding:10px 20px;
+  border:none;
+  border-radius:10px;
+  background:red;
+  color:white;
+  cursor:pointer;
+}
+
+.video{
+  margin:10px auto;
+  padding:10px;
+  width:80%;
+  background:#1a1a1a;
+  border-radius:10px;
+  cursor:pointer;
+  text-align:left;
+}
+
+.video:hover{
+  background:#2a2a2a;
+}
+
+#player iframe{
+  margin-top:20px;
+  width:80%;
+  height:300px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>🎧 Buscador de Música</h2>
+
+<input type="text" id="search" placeholder="Buscar canción...">
+<button onclick="searchVideos()">Buscar</button>
+
+<div id="results"></div>
+
+<div id="player"></div>
+
+<script>
+const API_KEY = "TU_API_KEY_AQUI";
+
+async function searchVideos(){
+  let query = document.getElementById("search").value;
+
+  let res = await fetch(
+    `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&maxResults=5&key=${API_KEY}`
+  );
+
+  let data = await res.json();
+
+  let results = document.getElementById("results");
+  results.innerHTML = "";
+
+  data.items.forEach(video => {
+    let div = document.createElement("div");
+    div.className = "video";
+
+    div.innerHTML = `
+      <b>${video.snippet.title}</b><br>
+      ${video.snippet.channelTitle}
+    `;
+
+    div.onclick = () => loadVideo(video.id.videoId);
+    results.appendChild(div);
+  });
+}
+
+function loadVideo(id){
+  document.getElementById("player").innerHTML = `
+    <iframe src="https://www.youtube.com/embed/${id}" 
+    frameborder="0" allowfullscreen></iframe>
+  `;
+}
+</script>
+
+</body>
+</html>
